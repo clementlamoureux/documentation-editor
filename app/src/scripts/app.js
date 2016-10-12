@@ -6,14 +6,33 @@ angular.module('documentation', ['ui.router'])
     templateUrl: 'src/views/root.html'
   });
 }])
-.run(function(){
+.run(function($rootScope){
   console.log('hey');
+  $rootScope.data = {};
+  $rootScope.data.editing = '';
 })
-.directive('markdownSimplemde', function(){
+.directive('markdownSimplemde', function($interval, $rootScope){
   return {
     link : function(scope, element){
       console.log(scope, element);
-      new SimpleMDE({ element: element[0] });
+      var mde = new SimpleMDE({ element: element[0] });
+      var interval = $interval(function(){
+        $rootScope.data.editing = mde.value();
+      }, 1000);
+      scope.$on('destroy', function(){
+        $interval.cancel(interval);
+      });
+    }
+  }
+})
+.directive('markdownViewer', function($interval, $rootScope){
+  return {
+    link : function(scope, element){
+      $rootScope.$watch(function(){
+        return $rootScope.data.editing;
+      }, function(a){
+        element[0].innerHTML = markdown.toHTML(a);
+      });
     }
   }
 });
