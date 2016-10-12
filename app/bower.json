@@ -1,0 +1,22 @@
+{
+  "name": "documentation-editor",
+  "description": "documentation raccourci editor",
+  "main": "main.js",
+  "authors": [
+    "[object Object]",
+    "[object Object]"
+  ],
+  "license": "CC0-1.0",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.8",
+    "angular-materialize": "^0.2.1"
+  }
+}
