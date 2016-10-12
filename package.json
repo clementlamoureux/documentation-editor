@@ -15,11 +15,12 @@
   },
   "scripts": {
     "postinstall": "install-app-deps",
+    "install": "npm install && cd app && bower install",
     "clear": "rm -rf dist/*",
     "start": " NODE_ENV='dev' electron ./app --enable-logging",
     "compile-linux": "NODE_ENV='prod' && npm run clear && build --linux --x64",
     "compile-mac": "NODE_ENV='prod' && npm run clear && build --mac",
-    "dist": "NODE_ENV='prod' && build -wml --x64"
+    "dist": "npm run install && NODE_ENV='prod' && build -wml --x64"
   },
   "devDependencies": {
     "devtron": "^1.3.0",
