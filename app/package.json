@@ -1,0 +1,36 @@
+{
+  "name": "beta-console-bagoo",
+  "productName": "Beta Console Bagoo",
+  "version": "0.1.20",
+  "description": "beta bagoo console",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": {
+    "name": "raccourci",
+    "email": "contact@raccourci.fr"
+  },
+  "contributors": [
+    {
+      "name": "Clément Lamoureux",
+      "email": "clement@raccourci.fr"
+    },
+    {
+      "name": "Quentin Neyrat",
+      "email": "quentin.neyrat@raccourci.fr"
+    }
+  ],
+  "license": "CC0-1.0",
+  "bugs": {
+    "email": "support@bagoo.io"
+  },
+  "homepage": "https://bagoo.io",
+  "devDependencies": {
+    "electron-prebuilt": "^1.2.0"
+  },
+  "dependencies": {
+    "configstore": "^2.1.0",
+    "electron-debug": "^1.0.1"
+  }
+}
