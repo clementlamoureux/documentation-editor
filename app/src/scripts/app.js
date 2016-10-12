@@ -19,7 +19,8 @@ angular.module('documentation', ['ui.router'])
       var interval = $interval(function(){
         $rootScope.data.editing = mde.value();
       }, 1000);
-      scope.$on('destroy', function(){
+      scope.$on('$destroy', function(){
+        console.log('destroy');
         $interval.cancel(interval);
       });
     }

@@ -7,11 +7,6 @@ const renderer = require('./renderer');
 var log = require('electron-log');
 const Configstore = require('configstore');
 
-var Git = require("nodegit");
-var fs = require("fs");
-
-console.log(app.getPath('userData'));
-
 function createWindow () {
   var scaleFactor = electron.screen.getPrimaryDisplay().scaleFactor;
   var primaryDisplay = electron.screen.getPrimaryDisplay();
@@ -30,7 +25,7 @@ function createWindow () {
     }
   });
   console.log(`file://${__dirname}/index.html`);
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  mainWindow.loadURL(`file://${__dirname}/index.html#/`);
 
 
 
