@@ -1,5 +1,21 @@
 <div class="row">
-    <div class="col s12 grey lighten-3"><h3>Raccourci Documentation Editor</h3></div>
-    <div class="col s6"><textarea markdown-simplemde ng-model="editing" cols="30" rows="10"></textarea></div>
-    <div class="col s6"><textarea markdown-simplemde ng-model="editing" cols="30" rows="10"></textarea></div>
+    <div class="col s12">
+        <div class="card-panel deep-orange darken-4 white-text row">
+            <span class="col s6">
+                <i class="material-icons">assignment</i>
+                <span>Demo.md</span>
+            </span>
+            <span class="col s6">
+                <span class="right btn btn-flat white" ng-if="data.editMode" ng-click="data.editMode = !data.editMode"><i class="material-icons right">mode_edit</i>Enregister</span>
+                <span class="right btn btn-flat white" ng-if="!data.editMode" ng-click="data.editMode = !data.editMode"><i class="material-icons right">mode_edit</i>Editer</span>
+            </span>
+        </div>
+    </div>
+    <div ng-if="data.editMode">
+        <div class="col s6"><textarea markdown-simplemde cols="30" rows="10"></textarea></div>
+        <div class="col s6 grey lighten-4"><div style="height: 500px;" markdown-viewer></div></div>
+    </div>
+    <div ng-if="!data.editMode">
+        <div class="col s12 grey lighten-4"><div style="height: 500px;" markdown-viewer></div></div>
+    </div>
 </div>

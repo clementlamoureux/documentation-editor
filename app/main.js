@@ -28,6 +28,8 @@ function createWindow () {
   console.log(`file://${__dirname}/index.html`);
   mainWindow.loadURL(`file://${__dirname}/index.html`);
 
+
+
   mainWindow.maximize();
 
   mainWindow.on('hide', function(){
