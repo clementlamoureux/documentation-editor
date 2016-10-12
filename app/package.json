@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "configstore": "^2.1.0",
-    "electron-debug": "^1.0.1"
+    "electron-debug": "^1.0.1",
+    "nodegit": "^0.16.0"
   }
 }
