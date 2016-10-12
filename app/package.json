@@ -1,8 +1,8 @@
 {
-  "name": "beta-console-bagoo",
-  "productName": "Beta Console Bagoo",
+  "name": "documentation-editor",
+  "productName": "Documentation Editor",
   "version": "0.1.20",
-  "description": "beta bagoo console",
+  "description": "documentation raccourci editor",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
