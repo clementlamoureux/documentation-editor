@@ -18,7 +18,7 @@
     "postinstall": "install-app-deps",
     "dep-install": "npm install && cd app && bower install",
     "clear": "rm -rf dist/*",
-    "start": " NODE_ENV='dev' electron ./app --enable-logging",
+    "start": "cd app/ && bower install && cd .. && NODE_ENV='dev' electron ./app --enable-logging",
     "compile-linux": "NODE_ENV='prod' && npm run clear && build --linux --x64",
     "compile-mac": "NODE_ENV='prod' && npm run clear && build --mac",
     "dist": "npm run dep-install && NODE_ENV='prod' && build -wml --x64"
