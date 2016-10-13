@@ -1,9 +1,9 @@
-<div class="row">
+<div class="row" style="height: 78%;">
     <div class="col s12">
         <div class="card-panel deep-orange darken-4 white-text row">
             <span class="col s6">
                 <i class="material-icons">assignment</i>
-                <span>Demo.md</span>
+                <span class="super"><span ng-repeat="part in currentPath">{{part}}<span ng-if="!$last"><strong class="grey-text">&nbsp;&gt;&nbsp;</strong></span></span></span>
             </span>
             <span class="col s6">
                 <span class="right btn btn-flat white" ng-if="data.editMode" ng-click="data.editMode = !data.editMode"><i class="material-icons right">mode_edit</i>Enregister</span>
@@ -11,14 +11,21 @@
             </span>
         </div>
     </div>
-    <ul class="collection">
-        <li class="collection-item" ng-repeat="file in mdFiles" ng-click="askOpenFile(file)" style="cursor:pointer;">{{file}}</li>
-    </ul>
-    <div ng-if="data.editMode">
-        <div class="col s6"><textarea markdown-simplemde cols="30" rows="10"></textarea></div>
-        <div class="col s6 grey lighten-4"><div style="height: 500px;" markdown-viewer></div></div>
+    <div class="col s12" ng-if="mdFiles.length > 1">
+        <ul class="collection">
+            <li class="collection-item" ng-repeat="file in mdFiles" ng-click="askOpenFile(file)">
+                <i class="material-icons circle">description</i>
+                <span class="title super">{{file}}</span>
+            </li>
+        </ul>
     </div>
-    <div ng-if="!data.editMode">
-        <div class="col s12 grey lighten-4"><div style="height: 500px;" markdown-viewer></div></div>
+    <div class="col s12">
+        <div ng-if="data.editMode" class="wrapper">
+            <div class="col s6"><textarea markdown-simplemde cols="30" rows="10"></textarea></div>
+            <div class="col s6 grey lighten-4"><div style="height: 100%;" markdown-viewer></div></div>
+        </div>
+        <div ng-if="!data.editMode">
+            <div class="col s12 grey lighten-4"><div style="height: 100%;" markdown-viewer></div></div>
+        </div>
     </div>
 </div>
