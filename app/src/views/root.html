@@ -11,6 +11,9 @@
             </span>
         </div>
     </div>
+    <ul class="collection">
+        <li class="collection-item" ng-repeat="file in mdFiles" ng-click="askOpenFile(file)" style="cursor:pointer;">{{file}}</li>
+    </ul>
     <div ng-if="data.editMode">
         <div class="col s6"><textarea markdown-simplemde cols="30" rows="10"></textarea></div>
         <div class="col s6 grey lighten-4"><div style="height: 500px;" markdown-viewer></div></div>
