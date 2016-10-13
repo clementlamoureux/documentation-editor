@@ -12,6 +12,7 @@ angular.module('documentation', ['ui.router'])
   $rootScope.data.editing = '';
   $rootScope.message = function(sender, message){
     $rootScope.mdFiles = message;
+    $rootScope.askOpenFile('README.md');
     $rootScope.$apply();
   };
   $rootScope.openFile = function(sender, text){
