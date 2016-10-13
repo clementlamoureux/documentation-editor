@@ -1,0 +1,11 @@
+.CodeMirror {
+    height: 91%;
+}
+
+.row, .row .s6, .wrapper .s12, .wrapper{
+    height: 100%;
+}
+
+.super{
+    vertical-align: super;
+}

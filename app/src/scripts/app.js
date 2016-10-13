@@ -11,17 +11,28 @@ angular.module('documentation', ['ui.router'])
   $rootScope.data = {};
   $rootScope.data.editing = '';
   $rootScope.message = function(sender, message){
-    $rootScope.mdFiles = message;
-    $rootScope.askOpenFile('README.md');
-    $rootScope.$apply();
-  };
-  $rootScope.openFile = function(sender, text){
-    $rootScope.data.editing = text[0];
-    $rootScope.$apply();
+    switch(message.type){
+      case 'list-files':
+        $rootScope.mdFiles = message.data;
+        $rootScope.askOpenFile('README.md');
+        $rootScope.$apply();
+        break;
+      case 'read-file':
+        $rootScope.currentFile = message.metadata.name;
+        $rootScope.currentPath = message.metadata.name.split('/');
+        $rootScope.data.editing = message.data;
+        $rootScope.data.editMode = false;
+        $rootScope.$apply();
+        break;
+    }
   };
   $rootScope.askOpenFile = function(fileName){
-    window.openFile(fileName);
-  }
+    window.send('read-file', fileName);
+  };
+  $rootScope.askListFiles = function(){
+    window.send('list-files');
+  };
+  $rootScope.askListFiles();
 })
 .directive('markdownSimplemde', function($interval, $rootScope){
   return {
@@ -50,6 +61,11 @@ angular.module('documentation', ['ui.router'])
         return $rootScope.data.editing;
       }, function(a){
         element[0].innerHTML = markdown.toHTML(a);
+        angular.element(element).find('a').on('click', function(e){
+          var urlMd = angular.element(e.target).attr('href');
+          $rootScope.askOpenFile(urlMd);
+          e.preventDefault();
+        });
       });
     }
   }

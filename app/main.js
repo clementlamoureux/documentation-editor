@@ -39,10 +39,10 @@ function createWindow () {
 
   ipcMain.on('read-file', function(event, fileName){
     var text = fs.readFileSync(configFolder + '/documentation-editor/' + fileName,'utf8');
-    event.sender.send('asynchronous-reply', text);
-  });
+    event.sender.send('message', {type: 'read-file', data: text, metadata: {name: fileName}});
 
-  setTimeout(function(){
+  });
+  ipcMain.on('list-files', function(event, fileName){
     var tmp = [];
     fs.readdir(configFolder + '/documentation-editor/', function(err, items) {
       for (var i=0; i<items.length; i++) {
@@ -51,8 +51,11 @@ function createWindow () {
         }
       }
       console.log(tmp);
-      contents.send('message', tmp);
+      event.sender.send('message', {type: 'list-files', data: tmp});
     });
+  });
+
+  setTimeout(function(){
   }, 2000);
 
   mainWindow.maximize();
