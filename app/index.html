@@ -16,7 +16,17 @@
   <script type="text/javascript" src="bower_components/markdown/lib/markdown.js"></script>
 
   <script type="text/javascript" src="src/scripts/app.js"></script>
-
+  <script>
+      require('electron').ipcRenderer.on('message', function(event, message){
+          angular.element(document).scope().message(event, message);
+      });
+      require('electron').ipcRenderer.on('asynchronous-reply', function(event, message){
+          angular.element(document).scope().openFile(event, [message]);
+      });
+      window.openFile = function(data){
+          console.log(require('electron').ipcRenderer.send('read-file', data));
+      }
+  </script>
   </body>
 
 </html>
