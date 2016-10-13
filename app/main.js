@@ -8,7 +8,7 @@ var log = require('electron-log');
 const Configstore = require('configstore');
 var fs = require('fs');
 
-var configFolder = app.getPath('appData');
+var configFolder = app.getPath('temp');
 const exec = require('child_process').exec;
 exec('git clone git@gitlab.raccourci.dev:documentation/documentation.git ' + configFolder + '/documentation-editor/');
 
