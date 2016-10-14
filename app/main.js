@@ -7,14 +7,29 @@ const renderer = require('./renderer');
 var request = require('request');
 var log = require('electron-log');
 const Configstore = require('configstore');
+const conf = new Configstore(app.getName());
 var fs = require('fs');
 var i18n = require('./src/locales/fr_FR.json');
-
-var configFolder = app.getPath('temp');
+var configFolder, gitUrl, localGitUrl;
+app.commandLine.appendSwitch('--enable-transparent-visuals');
+app.commandLine.appendSwitch('--disable-gpu');
 const exec = require('child_process').exec;
-exec('git clone git@gitlab.raccourci.dev:documentation/documentation.git ' + configFolder + '/documentation-editor/');
 
-function createWindow () {
+// START
+
+var start = function(){
+  if(conf.get('giturl') === undefined){
+    createGitWindow();
+  }
+  else{
+    loadGit(function(){
+      createMainWindow();
+    });
+  }
+};
+
+
+function createMainWindow () {
   var scaleFactor = electron.screen.getPrimaryDisplay().scaleFactor;
   var primaryDisplay = electron.screen.getPrimaryDisplay();
   var mainWindow = new BrowserWindow({
@@ -24,23 +39,30 @@ function createWindow () {
     y:0,
     minWidth: primaryDisplay.width * scaleFactor,
     minHeight: primaryDisplay.height * scaleFactor,
-    icon: __dirname + '/src/assets/bagoo-32.png',
+    icon: __dirname + '/src/assets/app_icon.png',
     center: true,
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false
     }
   });
-  console.log(`file://${__dirname}/index.html`);
   mainWindow.loadURL(`file://${__dirname}/index.html#/`);
-
-  var contents = mainWindow.webContents;
-  mainWindow.toggleDevTools();
 
   const template = [
     {
       label: i18n.MENU.FILE.TITLE,
       submenu: [
+        {
+          label: 'Changer de dépôt Git',
+          role: 'git',
+          click: function () {
+            mainWindow.hide();
+            createGitWindow();
+          }
+        },
+        {
+          type: 'separator'
+        },
         {
           label: i18n.MENU.FILE.EXIT,
           role: 'Quitter',
@@ -151,7 +173,7 @@ function createWindow () {
 
 
   ipcMain.on('read-file', function(event, fileName){
-    var text = fs.readFileSync(configFolder + '/documentation-editor/' + fileName,'utf8');
+    var text = fs.readFileSync(localGitUrl + fileName,'utf8');
     event.sender.send('message', {type: 'read-file', data: text, metadata: {name: fileName}});
 
   });
@@ -167,20 +189,18 @@ function createWindow () {
   });
   ipcMain.on('list-files', function(event, fileName){
     var tmp = [];
-    fs.readdir(configFolder + '/documentation-editor/', function(err, items) {
+    fs.readdir(localGitUrl, function(err, items) {
       for (var i=0; i<items.length; i++) {
         if(items[i].indexOf('.md') > -1){
           tmp.push(items[i]);
         }
       }
-      console.log(tmp);
       event.sender.send('message', {type: 'list-files', data: tmp});
     });
   });
   ipcMain.on('save-file', function(event, fileName, data){
-    console.log('save' , configFolder + '/documentation-editor/' + fileName);
-      fs.writeFile(configFolder + '/documentation-editor/' + fileName, data, function(){
-        exec('git add --all && git commit -m "Update ' + fileName + '" && git push');
+      fs.writeFile(localGitUrl + fileName, data, function(){
+        exec('cd ' + localGitUrl + ' && git add --all && git commit -m "Update ' + fileName + '" && git push');
       });
   });
 
@@ -203,7 +223,64 @@ function createWindow () {
   });
 }
 
-app.on('ready', createWindow);
+function createGitWindow() {
+  var primaryDisplay = electron.screen.getPrimaryDisplay();
+  var gitWindow = new BrowserWindow({
+    width: 820,
+    height: 430,
+    icon: __dirname + '/src/assets/app_icon.png',
+    frame: false,
+    resizable: false,
+    transparent: true,
+    x: primaryDisplay.bounds.width / 2 - 410,
+    y: primaryDisplay.bounds.height / 2 - 215,
+    webPreferences: {
+      nodeIntegration: true,
+      webSecurity: false
+    }
+  });
+  gitWindow.loadURL(`file://${__dirname}/git.html`);
+
+
+  ipcMain.on('set-git-url', function(event, gitUrl){
+    conf.set('giturl', gitUrl);
+    start();
+    gitWindow.hide();
+  });
+}
+
+function loadGit(callback) {
+
+  var scaleFactor = electron.screen.getPrimaryDisplay().scaleFactor;
+  if(scaleFactor > 1){
+    scaleFactor--;
+  }
+  var primaryDisplay = electron.screen.getPrimaryDisplay();
+  var loaderWindow = new BrowserWindow({
+    width: 80,
+    height: 80,
+    icon: __dirname + '/src/assets/app_icon.png',
+    x: primaryDisplay.bounds.width / 2 - 40,
+    y: primaryDisplay.bounds.height / 2 - 40,
+    transparent: true,
+    frame: false,
+    resizable: false,
+    webPreferences: {
+      nodeIntegration: true,
+      webSecurity: false
+    }
+  });
+  loaderWindow.loadURL(`file://${__dirname}/loader.html`);
+  configFolder = app.getPath('temp');
+  gitUrl = conf.get('giturl');
+  localGitUrl = configFolder + '/documentation-editor/';
+  exec('rm -rf ' + localGitUrl + ' && git clone ' + gitUrl + " " + localGitUrl, function(){
+    loaderWindow.hide();
+    callback();
+  });
+}
+
+app.on('ready', start);
 
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') {
@@ -213,7 +290,7 @@ app.on('window-all-closed', function () {
 
 app.on('activate', function () {
   if (mainWindow === null) {
-    createWindow();
+    createMainWindow();
 
   }
 });
