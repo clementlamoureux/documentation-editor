@@ -9,3 +9,36 @@
 .super{
     vertical-align: super;
 }
+
+.app-wrapper{
+    height: 90%;
+    position: relative;
+    display: block;
+}
+
+.content-wrapper{
+    overflow-x: hidden;
+    overflow-y: auto;
+    height:100%;
+}
+
+.full-height{
+    height: 100%;
+}
+
+.content-wrapper .column{
+    height: 98%;
+}
+.content-wrapper .column .column-item{
+    width: 50%;
+    display: inline-block;
+    float: left;
+}
+
+.markdown-viewer{
+    padding: 10px;
+}
+
+.btn-spacing{
+    margin-left: 10px;
+}
