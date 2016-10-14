@@ -35,6 +35,9 @@ angular.module('documentation', ['ui.router'])
   $rootScope.askListFiles = function(){
     window.send('list-files');
   };
+  $rootScope.saveFile = function(){
+    window.send('save-file', $rootScope.currentFile, $rootScope.data.editing);
+  };
   $rootScope.askListFiles();
 })
 .directive('markdownSimplemde', function($interval, $rootScope){
@@ -54,6 +57,7 @@ angular.module('documentation', ['ui.router'])
       }, 1000);
       mde.codemirror.on("paste", function(a, b){
         var cursor = mde.codemirror.getCursor();
+          console.log(b.clipboardData.getData('text'));
           if(b.clipboardData.getData('text').indexOf('/') > -1){
             b.preventDefault();
             window.send('upload-file', b.clipboardData.getData('text'));

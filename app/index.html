@@ -21,8 +21,8 @@
       require('electron').ipcRenderer.on('message', function(event, message){
           angular.element(document).scope().message(event, message);
       });
-      window.send = function(type, data){
-          require('electron').ipcRenderer.send(type, data);
+      window.send = function(type, data, data2){
+          require('electron').ipcRenderer.send(type, data, data2);
       };
   </script>
   </body>

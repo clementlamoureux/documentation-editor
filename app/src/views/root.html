@@ -6,7 +6,7 @@
                 <span class="super"><span ng-repeat="part in currentPath">{{part}}<span ng-if="!$last"><strong class="grey-text">&nbsp;&gt;&nbsp;</strong></span></span></span>
             </span>
             <span class="col s6">
-                <span class="right btn btn-flat white" ng-if="data.editMode" ng-click="data.editMode = !data.editMode"><i class="material-icons right">mode_edit</i>Enregister</span>
+                <span class="right btn btn-flat white" ng-if="data.editMode" ng-click="data.editMode = !data.editMode; saveFile()"><i class="material-icons right">mode_edit</i>Enregister</span>
                 <span class="right btn btn-flat white" ng-if="!data.editMode" ng-click="data.editMode = !data.editMode"><i class="material-icons right">mode_edit</i>Editer</span>
             </span>
         </div>
