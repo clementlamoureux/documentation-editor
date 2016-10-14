@@ -8,6 +8,7 @@ var request = require('request');
 var log = require('electron-log');
 const Configstore = require('configstore');
 var fs = require('fs');
+var i18n = require('./src/locales/fr_FR.json');
 
 var configFolder = app.getPath('temp');
 const exec = require('child_process').exec;
@@ -16,7 +17,7 @@ exec('git clone git@gitlab.raccourci.dev:documentation/documentation.git ' + con
 function createWindow () {
   var scaleFactor = electron.screen.getPrimaryDisplay().scaleFactor;
   var primaryDisplay = electron.screen.getPrimaryDisplay();
-  mainWindow = new BrowserWindow({
+  var mainWindow = new BrowserWindow({
     width: primaryDisplay.width * scaleFactor,
     height: primaryDisplay.height * scaleFactor,
     x:0,
@@ -36,6 +37,117 @@ function createWindow () {
   var contents = mainWindow.webContents;
   mainWindow.toggleDevTools();
 
+  const template = [
+    {
+      label: i18n.MENU.FILE.TITLE,
+      submenu: [
+        {
+          label: i18n.MENU.FILE.EXIT,
+          role: 'Quitter',
+          click: function () {
+            mainWindow.close();
+          }
+        }
+      ]
+    },
+    {
+      label: i18n.MENU.WINDOW.TITLE,
+      submenu: [
+        {
+          label: i18n.MENU.WINDOW.RELOAD,
+          role: 'Rafraîchir (F5)',
+          accelerator: 'F5',
+          click: function () {
+            mainWindow.reload();
+          }
+        },
+        {
+          label: i18n.MENU.WINDOW.FULLSCREEN,
+          role: 'Plein écran (F11)',
+          accelerator: 'F11',
+          click: function () {
+            mainWindow.setFullScreen(!mainWindow.isFullScreen());
+          }
+        },
+        {
+          label: i18n.MENU.WINDOW.MAXIMIZE,
+          role: 'Maximiser',
+          click: function () {
+            mainWindow.maximize();
+          }
+        },
+        {
+          label: i18n.MENU.WINDOW.ALWAYS_TOP,
+          role: 'Toujours devant',
+          type: 'checkbox',
+          click: function (menuItem) {
+            mainWindow.setAlwaysOnTop(menuItem.checked);
+          }
+        }
+      ]
+    },
+    {
+      label: i18n.MENU.HELP.TITLE,
+      submenu: [
+        {
+          label: i18n.MENU.HELP.DEV_TOOLS,
+          role: 'Console développeur',
+          accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'F12',
+          click: function () {
+            mainWindow.webContents.openDevTools();
+            if (module.BagooMenuConfig.popupWindow && !module.BagooMenuConfig.popupWindow.isDestroyed() && module.BagooMenuConfig.popupWindow.webContents) {
+              module.BagooMenuConfig.popupWindow.webContents.openDevTools();
+            }
+          }
+        },
+        {
+          label: i18n.MENU.HELP.RESET,
+          role: 'Reset data',
+          click: function () {
+            log.info('FLUSHING Storage bagoo...');
+            mainWindow.webContents.session.clearStorageData(
+              {
+                origin: 'http://bagoo.rc-preprod.com',
+                storages: ['cookies', 'local storage']
+              },
+              function () {
+                log.info('FLUSHING Storage bagoo...OK');
+                log.info('FLUSHING Storage Studio...');
+                mainWindow.webContents.session.clearStorageData(
+                  {
+                    origin: 'http://connect.studio.rc-preprod.com',
+                    storages: ['cookies', 'local storage']
+                  },
+                  function () {
+                    log.info('FLUSHING Storage Studio...OK');
+                    app.quit()
+                  }
+                );
+              }
+            );
+
+          }
+        },
+        {
+          label: i18n.MENU.ABOUT.TITLE,
+          role: 'Version',
+          click: function () {
+            var index = dialog.showMessageBox(mainWindow, {
+              type: 'info',
+              buttons: ['ok'],
+              title: "Documentation Editor",
+              message: 'VERSION: ' + app.getVersion(),
+              detail: "\nclementlamoureux@gmail.com 2016\n"
+            });
+            if (index === 1) {
+              return true;
+            }
+          }
+        }
+      ]
+    }];
+  var menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
 
 
   ipcMain.on('read-file', function(event, fileName){
@@ -64,6 +176,12 @@ function createWindow () {
       console.log(tmp);
       event.sender.send('message', {type: 'list-files', data: tmp});
     });
+  });
+  ipcMain.on('save-file', function(event, fileName, data){
+    console.log('save' , configFolder + '/documentation-editor/' + fileName);
+      fs.writeFile(configFolder + '/documentation-editor/' + fileName, data, function(){
+        exec('git add --all && git commit -m "Update ' + fileName + '" && git push');
+      });
   });
 
   setTimeout(function(){
