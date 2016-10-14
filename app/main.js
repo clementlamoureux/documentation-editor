@@ -4,6 +4,7 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const {Tray, Menu, dialog, ipcMain} = require('electron');
 const renderer = require('./renderer');
+var request = require('request');
 var log = require('electron-log');
 const Configstore = require('configstore');
 var fs = require('fs');
@@ -41,6 +42,16 @@ function createWindow () {
     var text = fs.readFileSync(configFolder + '/documentation-editor/' + fileName,'utf8');
     event.sender.send('message', {type: 'read-file', data: text, metadata: {name: fileName}});
 
+  });
+  ipcMain.on('upload-file', function(event, pathToFile){
+    var req = request.post('https://vgy.me/upload', function (err, resp, body) {
+      if (err) {
+      } else {
+        event.sender.send('message', {type: 'upload-file', data: body, metadata: {name: pathToFile}});
+      }
+    });
+    var form = req.form();
+    form.append('file', fs.createReadStream(pathToFile));
   });
   ipcMain.on('list-files', function(event, fileName){
     var tmp = [];
