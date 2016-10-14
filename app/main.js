@@ -2,7 +2,7 @@
 const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
-const {Tray, Menu, dialog, ipcMain} = require('electron');
+const {Tray, Menu, dialog, ipcMain, protocol} = require('electron');
 const renderer = require('./renderer');
 var request = require('request');
 var log = require('electron-log');
@@ -85,7 +85,7 @@ function createMainWindow () {
         },
         {
           label: i18n.MENU.WINDOW.FULLSCREEN,
-          role: 'Plein écran (F11)',
+          role: 'Plein écran',
           accelerator: 'F11',
           click: function () {
             mainWindow.setFullScreen(!mainWindow.isFullScreen());
@@ -117,37 +117,6 @@ function createMainWindow () {
           accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'F12',
           click: function () {
             mainWindow.webContents.openDevTools();
-            if (module.BagooMenuConfig.popupWindow && !module.BagooMenuConfig.popupWindow.isDestroyed() && module.BagooMenuConfig.popupWindow.webContents) {
-              module.BagooMenuConfig.popupWindow.webContents.openDevTools();
-            }
-          }
-        },
-        {
-          label: i18n.MENU.HELP.RESET,
-          role: 'Reset data',
-          click: function () {
-            log.info('FLUSHING Storage bagoo...');
-            mainWindow.webContents.session.clearStorageData(
-              {
-                origin: 'http://bagoo.rc-preprod.com',
-                storages: ['cookies', 'local storage']
-              },
-              function () {
-                log.info('FLUSHING Storage bagoo...OK');
-                log.info('FLUSHING Storage Studio...');
-                mainWindow.webContents.session.clearStorageData(
-                  {
-                    origin: 'http://connect.studio.rc-preprod.com',
-                    storages: ['cookies', 'local storage']
-                  },
-                  function () {
-                    log.info('FLUSHING Storage Studio...OK');
-                    app.quit()
-                  }
-                );
-              }
-            );
-
           }
         },
         {
@@ -203,10 +172,17 @@ function createMainWindow () {
         exec('cd ' + localGitUrl + ' && git add --all && git commit -m "Update ' + fileName + '" && git push');
       });
   });
-
-  setTimeout(function(){
-  }, 2000);
-
+  const filter = {
+    urls: ['*']
+  };
+  mainWindow.webContents.session.webRequest.onBeforeRequest(filter, function(request, callback){
+    if(request.resourceType === 'image' && request.url.indexOf('file:///home/clement/dev/documentation/documentation-editor/app/') > -1){
+      var toto = request.url.replace('file:///home/clement/dev/documentation/documentation-editor/app/', localGitUrl);
+      toto = 'file://' + toto;
+      console.log(toto);
+    }
+    callback({cancel: false, redirectURL: toto});
+  });
   mainWindow.maximize();
 
   mainWindow.on('hide', function(){
@@ -240,6 +216,7 @@ function createGitWindow() {
     }
   });
   gitWindow.loadURL(`file://${__dirname}/git.html`);
+
 
 
   ipcMain.on('set-git-url', function(event, gitUrl){
