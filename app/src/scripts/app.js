@@ -6,7 +6,7 @@ angular.module('documentation', ['ui.router'])
     templateUrl: 'src/views/root.html'
   });
 }])
-.run(function($rootScope, $window){
+.run(function($rootScope, $window, $http){
   $rootScope.window = $window;
   $rootScope.data = {};
   $rootScope.data.editing = '';
@@ -16,6 +16,9 @@ angular.module('documentation', ['ui.router'])
         $rootScope.mdFiles = message.data;
         $rootScope.askOpenFile('README.md');
         $rootScope.$apply();
+        break;
+      case 'upload-file':
+        $rootScope.$broadcast('upload-file', message);
         break;
       case 'read-file':
         $rootScope.currentFile = message.metadata.name;
@@ -42,11 +45,26 @@ angular.module('documentation', ['ui.router'])
       $rootScope.$watch(function(){
         return $rootScope.data.editing;
       }, function(a){
-        mde.value(a);
+        var cursor = mde.codemirror.getCursor();
+          mde.value(a);
+          mde.codemirror.setCursor(cursor);
       });
       var interval = $interval(function(){
         $rootScope.data.editing = mde.value();
       }, 1000);
+      mde.codemirror.on("paste", function(a, b){
+        var cursor = mde.codemirror.getCursor();
+          if(b.clipboardData.getData('text').indexOf('/') > -1){
+            b.preventDefault();
+            window.send('upload-file', b.clipboardData.getData('text'));
+            var eventUpload = $rootScope.$on('upload-file', function(event, data){
+              mde.codemirror.setCursor(cursor);
+              var html = '![alt text](' + JSON.parse(data.data).image + ' "Image")';
+              mde.codemirror.replaceRange(html, cursor);
+              eventUpload();
+            });
+          }
+      });
       scope.$on('$destroy', function(){
         console.log('destroy');
         $interval.cancel(interval);
