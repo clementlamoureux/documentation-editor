@@ -87,7 +87,10 @@ angular.module('documentation', ['ui.router'])
         $rootScope.$watch(function(){
           return $rootScope.data.editing;
         }, function(a){
-          element[0].innerHTML = markdown.toHTML(a);
+          var md = window.markdownit();
+          md.use(markdownitEmoji);
+          element[0].innerHTML = md.render(a);
+          // element[0].innerHTML = markdown.toHTML(a);
           angular.element(element).find('a').on('click', function(e){
             var urlMd = angular.element(e.target).attr('href');
             $rootScope.askOpenFile(urlMd);

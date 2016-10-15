@@ -81,6 +81,7 @@ function createMainWindow () {
       event.sender.send('message', {type: 'list-files', data: tmp});
     });
   });
+  console.log(__dirname);
   ipcMain.on('save-file', function(event, fileName, data){
       fs.writeFile(localGitUrl + fileName, data, function(){
         exec('cd ' + localGitUrl + ' && git add --all && git commit -m "Update ' + fileName + '" && git push');
@@ -91,7 +92,7 @@ function createMainWindow () {
   };
   mainWindow.webContents.session.webRequest.onBeforeRequest(filter, function(request, callback){
     if(request.resourceType === 'image' && request.url.indexOf(__dirname) > -1){
-      var tmp = request.url.replace('file:///home/clement/dev/documentation/documentation-editor/app/', localGitUrl);
+      var tmp = request.url.replace('file://' + __dirname, localGitUrl);
       tmp = 'file://' + tmp;
     }
     callback({cancel: false, redirectURL: tmp});
