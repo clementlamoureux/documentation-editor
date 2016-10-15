@@ -22,3 +22,11 @@
 
 `npm install`
 `npm start`
+
+### Contributing
+
+*Feel free to fork and contribute !*
+
+### License
+
+MIT 2016
