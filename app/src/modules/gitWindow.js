@@ -6,7 +6,7 @@ const conf = new Configstore(app.getName());
 module.exports = function(){
   var module = {};
   module.GitWindow = {
-    create: function(){
+    create: function(callback){
       var primaryDisplay = electron.screen.getPrimaryDisplay();
       var gitWindow = new BrowserWindow({
         width: 820,
