@@ -8,24 +8,24 @@
     "start": "electron ."
   },
   "author": {
-    "name": "raccourci",
-    "email": "contact@raccourci.fr"
+    "name": "Clément Lamoureux",
+    "email": "clementlamoureux@gmail.com"
   },
   "contributors": [
     {
       "name": "Clément Lamoureux",
-      "email": "clement@raccourci.fr"
+      "email": "clementlamoureux@gmail.com"
     },
     {
       "name": "Quentin Neyrat",
-      "email": "quentin.neyrat@raccourci.fr"
+      "email": "neyrat@msn.com"
     }
   ],
   "license": "CC0-1.0",
   "bugs": {
-    "email": "support@bagoo.io"
+    "email": "clementlamoureux@gmail.com"
   },
-  "homepage": "https://bagoo.io",
+  "homepage": "http://github.com/clementlamoureux/documentation-editor",
   "devDependencies": {
     "electron-prebuilt": "^1.2.0"
   },

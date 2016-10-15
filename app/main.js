@@ -9,20 +9,25 @@ var log = require('electron-log');
 const Configstore = require('configstore');
 const conf = new Configstore(app.getName());
 var fs = require('fs');
-var i18n = require('./src/locales/fr_FR.json');
-var configFolder, gitUrl, localGitUrl;
 app.commandLine.appendSwitch('--enable-transparent-visuals');
 app.commandLine.appendSwitch('--disable-gpu');
 const exec = require('child_process').exec;
+const {GitWindow} = require('./src/modules/gitWindow')();
+const {GitLoader} = require('./src/modules/gitLoader')();
+const menu = require('./src/modules/menu');
+
+const configFolder = app.getPath('temp');
+const gitUrl = conf.get('giturl');
+const localGitUrl = configFolder + '/documentation-editor-data/';
 
 // START
 
 var start = function(){
   if(conf.get('giturl') === undefined){
-    createGitWindow();
+    GitWindow.create(start);
   }
   else{
-    loadGit(function(){
+    GitLoader.create(configFolder, gitUrl, localGitUrl, start, function(){
       createMainWindow();
     });
   }
@@ -47,98 +52,7 @@ function createMainWindow () {
     }
   });
   mainWindow.loadURL(`file://${__dirname}/index.html#/`);
-
-  const template = [
-    {
-      label: i18n.MENU.FILE.TITLE,
-      submenu: [
-        {
-          label: 'Changer de dépôt Git',
-          role: 'git',
-          click: function () {
-            mainWindow.hide();
-            createGitWindow();
-          }
-        },
-        {
-          type: 'separator'
-        },
-        {
-          label: i18n.MENU.FILE.EXIT,
-          role: 'Quitter',
-          click: function () {
-            mainWindow.close();
-          }
-        }
-      ]
-    },
-    {
-      label: i18n.MENU.WINDOW.TITLE,
-      submenu: [
-        {
-          label: i18n.MENU.WINDOW.RELOAD,
-          role: 'Rafraîchir (F5)',
-          accelerator: 'F5',
-          click: function () {
-            mainWindow.reload();
-          }
-        },
-        {
-          label: i18n.MENU.WINDOW.FULLSCREEN,
-          role: 'Plein écran',
-          accelerator: 'F11',
-          click: function () {
-            mainWindow.setFullScreen(!mainWindow.isFullScreen());
-          }
-        },
-        {
-          label: i18n.MENU.WINDOW.MAXIMIZE,
-          role: 'Maximiser',
-          click: function () {
-            mainWindow.maximize();
-          }
-        },
-        {
-          label: i18n.MENU.WINDOW.ALWAYS_TOP,
-          role: 'Toujours devant',
-          type: 'checkbox',
-          click: function (menuItem) {
-            mainWindow.setAlwaysOnTop(menuItem.checked);
-          }
-        }
-      ]
-    },
-    {
-      label: i18n.MENU.HELP.TITLE,
-      submenu: [
-        {
-          label: i18n.MENU.HELP.DEV_TOOLS,
-          role: 'Console développeur',
-          accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'F12',
-          click: function () {
-            mainWindow.webContents.openDevTools();
-          }
-        },
-        {
-          label: i18n.MENU.ABOUT.TITLE,
-          role: 'Version',
-          click: function () {
-            var index = dialog.showMessageBox(mainWindow, {
-              type: 'info',
-              buttons: ['ok'],
-              title: "Documentation Editor",
-              message: 'VERSION: ' + app.getVersion(),
-              detail: "\nclementlamoureux@gmail.com 2016\n"
-            });
-            if (index === 1) {
-              return true;
-            }
-          }
-        }
-      ]
-    }];
-  var menu = Menu.buildFromTemplate(template);
-  Menu.setApplicationMenu(menu);
+  menu.init(mainWindow, GitWindow, start);
 
 
   ipcMain.on('read-file', function(event, fileName){
@@ -156,7 +70,7 @@ function createMainWindow () {
     var form = req.form();
     form.append('file', fs.createReadStream(pathToFile));
   });
-  ipcMain.on('list-files', function(event, fileName){
+  ipcMain.on('list-files', function(event){
     var tmp = [];
     fs.readdir(localGitUrl, function(err, items) {
       for (var i=0; i<items.length; i++) {
@@ -176,12 +90,11 @@ function createMainWindow () {
     urls: ['*']
   };
   mainWindow.webContents.session.webRequest.onBeforeRequest(filter, function(request, callback){
-    if(request.resourceType === 'image' && request.url.indexOf('file:///home/clement/dev/documentation/documentation-editor/app/') > -1){
-      var toto = request.url.replace('file:///home/clement/dev/documentation/documentation-editor/app/', localGitUrl);
-      toto = 'file://' + toto;
-      console.log(toto);
+    if(request.resourceType === 'image' && request.url.indexOf(__dirname) > -1){
+      var tmp = request.url.replace('file:///home/clement/dev/documentation/documentation-editor/app/', localGitUrl);
+      tmp = 'file://' + tmp;
     }
-    callback({cancel: false, redirectURL: toto});
+    callback({cancel: false, redirectURL: tmp});
   });
   mainWindow.maximize();
 
@@ -196,64 +109,6 @@ function createMainWindow () {
 
   mainWindow.on('closed', function () {
     mainWindow = null
-  });
-}
-
-function createGitWindow() {
-  var primaryDisplay = electron.screen.getPrimaryDisplay();
-  var gitWindow = new BrowserWindow({
-    width: 820,
-    height: 430,
-    icon: __dirname + '/src/assets/app_icon.png',
-    frame: false,
-    resizable: false,
-    transparent: true,
-    x: primaryDisplay.bounds.width / 2 - 410,
-    y: primaryDisplay.bounds.height / 2 - 215,
-    webPreferences: {
-      nodeIntegration: true,
-      webSecurity: false
-    }
-  });
-  gitWindow.loadURL(`file://${__dirname}/git.html`);
-
-
-
-  ipcMain.on('set-git-url', function(event, gitUrl){
-    conf.set('giturl', gitUrl);
-    start();
-    gitWindow.hide();
-  });
-}
-
-function loadGit(callback) {
-
-  var scaleFactor = electron.screen.getPrimaryDisplay().scaleFactor;
-  if(scaleFactor > 1){
-    scaleFactor--;
-  }
-  var primaryDisplay = electron.screen.getPrimaryDisplay();
-  var loaderWindow = new BrowserWindow({
-    width: 80,
-    height: 80,
-    icon: __dirname + '/src/assets/app_icon.png',
-    x: primaryDisplay.bounds.width / 2 - 40,
-    y: primaryDisplay.bounds.height / 2 - 40,
-    transparent: true,
-    frame: false,
-    resizable: false,
-    webPreferences: {
-      nodeIntegration: true,
-      webSecurity: false
-    }
-  });
-  loaderWindow.loadURL(`file://${__dirname}/loader.html`);
-  configFolder = app.getPath('temp');
-  gitUrl = conf.get('giturl');
-  localGitUrl = configFolder + '/documentation-editor/';
-  exec('rm -rf ' + localGitUrl + ' && git clone ' + gitUrl + " " + localGitUrl, function(){
-    loaderWindow.hide();
-    callback();
   });
 }
 
