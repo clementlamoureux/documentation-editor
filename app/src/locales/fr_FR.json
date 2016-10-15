@@ -4,11 +4,6 @@
       "TITLE": "Fichier",
       "EXIT": "Quitter"
     },
-    "ACCOUNT": {
-      "TITLE": "Compte",
-      "MY_ACCOUNT": "Mon compte",
-      "LOGOUT": "Se déconnecter"
-    },
     "WINDOW": {
       "TITLE": "Fenêtre",
       "CONTEXT_TITLE": "Affichage",
@@ -17,15 +12,8 @@
       "MAXIMIZE": "Maximiser",
       "ALWAYS_TOP": "Toujours devant"
     },
-    "HELP": {
-      "TITLE": "Aide",
-      "DEV_TOOLS": "Console développeur",
-      "FULLSCREEN": "Plein écran (F11)",
-      "MAXIMIZE": "Maximiser",
-      "ALWAYS_TOP": "Toujours devant",
-      "RESET": "Supprimer les données"
-    },
     "ABOUT": {
+      "HELP": "Aide",
       "TITLE": "À propos",
       "DEV_TOOLS": "Console développeur",
       "FULLSCREEN": "Plein écran (F11)",
@@ -33,14 +21,5 @@
       "ALWAYS_TOP": "Toujours devant",
       "RESET": "Supprimer les données"
     }
-  },
-  "CONTEXTMENU": {
-    "SHOW_NOTIFS": "Afficher les notifications",
-    "HIDE": "Masquer la fenêtre",
-    "SHOW": "Montrer la fenêtre",
-    "UPDATE": "Mise à jour",
-    "NEW_VERSION": "The new version has been downloaded. Please restart the application to apply the updates.",
-    "RESTART": "Redémarrer",
-    "LATER": "Plus tard"
   }
 }

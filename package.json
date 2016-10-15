@@ -1,9 +1,9 @@
 {
   "build": {
     "appId": "io.documentation.editor",
-    "category": "public.app-category.travel",
+    "category": "public.app-category.doc",
     "win": {
-      "iconUrl": "http://gitlab.raccourci.dev/uploads/group/avatar/113/1476277418_2.png",
+      "iconUrl": "app/src/assets/app_icon",
       "target": "squirrel",
       "msi": true
     },
