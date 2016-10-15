@@ -20,8 +20,9 @@
 
 ### Install
 
-`npm install`
-`npm start`
+- `npm install`
+- `cd /app/ && bower install`
+- `npm start`
 
 ### Contributing
 
