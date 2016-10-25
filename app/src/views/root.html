@@ -3,29 +3,29 @@
         <div class="card-panel deep-orange darken-4 white-text row">
             <span class="col s6 left-align white-text">
                 <i class="material-icons">assignment</i>
-                <span class="super"><span ng-repeat="part in currentPath">{{part}}<span ng-if="!$last"><strong class="grey-text">&nbsp;&gt;&nbsp;</strong></span></span></span>
+                <span class="super"><span *ngFor="let part of currentPath">{{part}}<span *ngIf="!$last"><strong class="grey-text">&nbsp;&gt;&nbsp;</strong></span></span></span>
             </span>
             <span class="col s6">
-                <span class="right btn btn-flat white btn-spacing" ng-if="data.editMode" ng-click="data.editMode = !data.editMode; saveFile()"><i class="material-icons right">mode_edit</i>Enregister</span>
-                <span class="right btn btn-flat white btn-spacing" ng-if="data.editMode" ng-click="data.editMode = !data.editMode; cancelEditing()"><i class="material-icons right">not_interested</i>Annuler</span>
-                <span class="right btn btn-flat white btn-spacing" ng-if="!data.editMode" ng-click="data.editMode = !data.editMode"><i class="material-icons right">mode_edit</i>Editer</span>
+                <span class="right btn btn-flat white btn-spacing" *ngIf="data.editMode" (click)="data.editMode = !data.editMode; saveFile()"><i class="material-icons right">mode_edit</i>Enregister</span>
+                <span class="right btn btn-flat white btn-spacing" *ngIf="data.editMode" (click)="data.editMode = !data.editMode; cancelEditing()"><i class="material-icons right">not_interested</i>Annuler</span>
+                <span class="right btn btn-flat white btn-spacing" *ngIf="!data.editMode" (click)="data.editMode = !data.editMode"><i class="material-icons right">mode_edit</i>Editer</span>
             </span>
         </div>
     </div>
-    <div class="col s12" ng-if="mdFiles.length > 1">
+    <div class="col s12" *ngIf="mdFiles && mdFiles.length > 1">
         <ul class="collection">
-            <li class="collection-item" ng-repeat="file in mdFiles" ng-click="askOpenFile(file)">
+            <li class="collection-item" *ngFor="let file of mdFiles" (click)="askOpenFile(file)">
                 <i class="material-icons circle">description</i>
                 <span class="title super">{{file}}</span>
             </li>
         </ul>
     </div>
     <div class="col s12 content-wrapper">
-        <div ng-if="data.editMode" class="column">
+        <div *ngIf="data.editMode" class="column">
             <div class="column-item grey lighten-4 full-height"><textarea markdown-simplemde cols="30" rows="10"></textarea></div>
             <div class="column-item grey lighten-4 full-height"><div class="full-height markdown-viewer" markdown-viewer></div></div>
         </div>
-        <div ng-if="!data.editMode" class="column">
+        <div *ngIf="!data.editMode" class="column">
             <div class="col s12 grey lighten-4 full-height"><div class="full-height" markdown-viewer></div></div>
         </div>
     </div>

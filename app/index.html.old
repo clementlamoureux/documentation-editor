@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html style="width: 100%;height: 100%; display: block;padding:0;margin:0;">
+  <head>
+    <meta charset="UTF-8">
+    <title>Documentation Editor</title>
+      <link rel="stylesheet" href="bower_components/materialize/dist/css/materialize.min.css">
+      <link rel="stylesheet" href="bower_components/simplemde/dist/simplemde.min.css">
+      <link rel="stylesheet" href="src/main.css">
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  <body style="width: 100%;height: 100%; display: block;padding:0;margin:0;" class="grey lighten-3">
+  <ui-view></ui-view>
+  <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+  <script type="text/javascript" src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+  <script type="text/javascript" src="bower_components/angular-materialize/js/app.js"></script>
+  <script type="text/javascript" src="bower_components/simplemde/dist/simplemde.min.js"></script>
+  <script type="text/javascript" src="bower_components/markdown-it/dist/markdown-it.min.js"></script>
+  <script type="text/javascript" src="bower_components/markdown-it-emoji/dist/markdown-it-emoji.min.js"></script>
+
+  <script type="text/javascript" src="src/scripts/app.js"></script>
+  <script>
+      require('electron').ipcRenderer.on('message', function(event, message){
+          angular.element(document).scope().message(event, message);
+      });
+      window.send = function(type, data, data2){
+          require('electron').ipcRenderer.send(type, data, data2);
+      };
+  </script>
+  </body>
+
+</html>

@@ -51,7 +51,7 @@ function createMainWindow () {
       webSecurity: false
     }
   });
-  mainWindow.loadURL(`file://${__dirname}/index.html#/`);
+  mainWindow.loadURL(`file://${__dirname}/src/web/index.html`);
   menu.init(mainWindow, GitWindow, start);
 
 
