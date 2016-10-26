@@ -1,12 +1,17 @@
 import { NgModule }      from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { DestinationEditorComponent }   from './app.component';
-import {RouterModule} from "@angular/router";
+
+import { DocumentationEditorComponent }   from './app.component';
+import {DocumentationEditorStorage} from "./storage.service";
+import {WriterDirective} from "./writer.directive";
+import {ReaderDirective} from "./reader.directive";
+
 @NgModule({
     imports:      [ BrowserModule ],
-    declarations: [ DestinationEditorComponent ],
-    bootstrap:    [ DestinationEditorComponent ]
+    declarations: [ DocumentationEditorComponent, WriterDirective, ReaderDirective],
+    bootstrap:    [ DocumentationEditorComponent ],
+    providers:    [ DocumentationEditorStorage ]
 })
-export class DestinationEditor {
+export class DocumentationEditor {
 
 }

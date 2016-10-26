@@ -27,8 +27,11 @@
     "bootstrap": "^3.3.7",
     "core-js": "^2.4.1",
     "electron": "^1.4.4",
+    "markdown-it": "^8.0.1",
+    "markdown-it-emoji": "^1.3.0",
     "reflect-metadata": "^0.1.8",
     "rxjs": "5.0.0-beta.12",
+    "simplemde": "^1.11.2",
     "systemjs": "0.19.39",
     "ui-router-ng2": "^1.0.0-beta.3",
     "zone.js": "^0.6.25"

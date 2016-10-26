@@ -10,27 +10,31 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require('@angular/core');
 var electron_1 = require('@node/electron');
-var DestinationEditorComponent = (function () {
-    function DestinationEditorComponent() {
+var storage_service_1 = require("./storage.service");
+var DocumentationEditorComponent = (function () {
+    function DocumentationEditorComponent(storage) {
         this.title = 'test';
-        this.data = { editing: '', editMode: false };
         var self = this;
+        this.storage = storage;
+        storage.setCurrentFile(storage.currentFile);
+        storage.setCurrentPath(storage.currentPath);
+        storage.setMdFiles(storage.mdFiles);
         this.askListFiles();
         this.setListener();
         setInterval(function () {
             console.log('test');
         }, 1000);
     }
-    DestinationEditorComponent.prototype.askOpenFile = function (fileName) {
+    DocumentationEditorComponent.prototype.askOpenFile = function (fileName) {
         this.send('read-file', fileName);
     };
     ;
-    DestinationEditorComponent.prototype.message = function (sender, message) {
+    DocumentationEditorComponent.prototype.message = function (sender, message) {
         var self = this;
         switch (message.type) {
             case 'list-files':
                 setTimeout(function () {
-                    self.mdFiles = message.data;
+                    self.storage.setMdFiles(message.data);
                     self.askOpenFile('README.md');
                 }, 0);
                 break;
@@ -40,45 +44,46 @@ var DestinationEditorComponent = (function () {
             case 'read-file':
                 setTimeout(function () {
                     console.log(message);
-                    self.currentFile = message.metadata.name;
-                    self.currentPath = message.metadata.name.split('/');
-                    self.data.editing = message.data;
-                    self.data.editMode = false;
+                    self.storage.setCurrentFile(message.metadata.name);
+                    self.storage.setCurrentPath(message.metadata.name.split('/'));
+                    self.storage.setFileContent(message.data);
+                    self.storage.setEditMode(false);
                 }, 0);
                 break;
         }
     };
     ;
-    DestinationEditorComponent.prototype.cancelEditing = function () {
-        this.send('read-file', this.currentFile);
+    DocumentationEditorComponent.prototype.cancelEditing = function () {
+        this.send('read-file', this.storage.currentFile);
     };
     ;
-    DestinationEditorComponent.prototype.askListFiles = function () {
+    DocumentationEditorComponent.prototype.askListFiles = function () {
         this.send('list-files');
     };
     ;
-    DestinationEditorComponent.prototype.saveFile = function () {
-        this.send('save-file', this.currentFile, this.data.editing);
+    DocumentationEditorComponent.prototype.saveFile = function () {
+        console.log(this.storage.data.editing);
+        // this.send('save-file', this.storage.currentFile, this.storage.data.editing);
     };
     ;
-    DestinationEditorComponent.prototype.setListener = function () {
+    DocumentationEditorComponent.prototype.setListener = function () {
         var self = this;
         electron_1.ipcRenderer.on('message', function (event, message) {
             self.message(event, message);
         });
     };
-    DestinationEditorComponent.prototype.send = function (type, data, data2) {
+    DocumentationEditorComponent.prototype.send = function (type, data, data2) {
         electron_1.ipcRenderer.send(type, data, data2);
     };
     ;
-    DestinationEditorComponent = __decorate([
+    DocumentationEditorComponent = __decorate([
         core_1.Component({
             selector: 'documentation-editor',
             templateUrl: '../views/root.html'
         }), 
-        __metadata('design:paramtypes', [])
-    ], DestinationEditorComponent);
-    return DestinationEditorComponent;
+        __metadata('design:paramtypes', [storage_service_1.DocumentationEditorStorage])
+    ], DocumentationEditorComponent);
+    return DocumentationEditorComponent;
 }());
-exports.DestinationEditorComponent = DestinationEditorComponent;
+exports.DocumentationEditorComponent = DocumentationEditorComponent;
 //# sourceMappingURL=app.component.js.map

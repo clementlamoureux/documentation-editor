@@ -11,18 +11,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require('@angular/core');
 var platform_browser_1 = require('@angular/platform-browser');
 var app_component_1 = require('./app.component');
-var DestinationEditor = (function () {
-    function DestinationEditor() {
+var storage_service_1 = require("./storage.service");
+var writer_directive_1 = require("./writer.directive");
+var reader_directive_1 = require("./reader.directive");
+var DocumentationEditor = (function () {
+    function DocumentationEditor() {
     }
-    DestinationEditor = __decorate([
+    DocumentationEditor = __decorate([
         core_1.NgModule({
             imports: [platform_browser_1.BrowserModule],
-            declarations: [app_component_1.DestinationEditorComponent],
-            bootstrap: [app_component_1.DestinationEditorComponent]
+            declarations: [app_component_1.DocumentationEditorComponent, writer_directive_1.WriterDirective, reader_directive_1.ReaderDirective],
+            bootstrap: [app_component_1.DocumentationEditorComponent],
+            providers: [storage_service_1.DocumentationEditorStorage]
         }), 
         __metadata('design:paramtypes', [])
-    ], DestinationEditor);
-    return DestinationEditor;
+    ], DocumentationEditor);
+    return DocumentationEditor;
 }());
-exports.DestinationEditor = DestinationEditor;
+exports.DocumentationEditor = DocumentationEditor;
 //# sourceMappingURL=app.module.js.map

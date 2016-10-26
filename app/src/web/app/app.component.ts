@@ -1,20 +1,21 @@
-import { Component } from '@angular/core';
+import { Component , Inject} from '@angular/core';
 import {ipcRenderer} from '@node/electron';
-
+import {DocumentationEditorStorage} from "./storage.service";
 
 @Component({
     selector: 'documentation-editor',
     templateUrl: '../views/root.html'
 })
-export class DestinationEditorComponent {
-    title = 'test';
-    currentFile;
-    currentPath;
-    mdFiles;
-    data = { editing: '', editMode: false};
+export class DocumentationEditorComponent {
+    public title = 'test';
+    storage;
 
-    constructor(){
+    constructor(storage: DocumentationEditorStorage){
         var self = this;
+        this.storage = storage;
+        storage.setCurrentFile(storage.currentFile);
+        storage.setCurrentPath(storage.currentPath);
+        storage.setMdFiles(storage.mdFiles);
         this.askListFiles();
         this.setListener();
         setInterval(function(){
@@ -30,7 +31,7 @@ export class DestinationEditorComponent {
         switch(message.type){
             case 'list-files':
                 setTimeout(function(){
-                    self.mdFiles = message.data;
+                    self.storage.setMdFiles(message.data);
                     self.askOpenFile('README.md');
                 }, 0);
                 break;
@@ -40,23 +41,24 @@ export class DestinationEditorComponent {
             case 'read-file':
                 setTimeout(function(){
                     console.log(message);
-                    self.currentFile = message.metadata.name;
-                    self.currentPath = message.metadata.name.split('/');
-                    self.data.editing = message.data;
-                    self.data.editMode = false;
+                    self.storage.setCurrentFile(message.metadata.name);
+                    self.storage.setCurrentPath(message.metadata.name.split('/'));
+                    self.storage.setFileContent(message.data);
+                    self.storage.setEditMode(false);
                 }, 0);
                 break;
         }
     };
 
     cancelEditing(){
-        this.send('read-file', this.currentFile);
+        this.send('read-file', this.storage.currentFile);
     };
     askListFiles(){
         this.send('list-files');
     };
     saveFile(){
-        this.send('save-file', this.currentFile, this.data.editing);
+        console.log(this.storage.data.editing);
+        // this.send('save-file', this.storage.currentFile, this.storage.data.editing);
     };
 
     setListener() {
